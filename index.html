@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.socket.io/3.1.1/socket.io.min.js" integrity="sha384-gDaozqUvc4HTgo8iZjwth73C6dDDeOJsAgpxBcMpZYztUfjHXpzrpdrHRdVp8ySO" crossorigin="anonymous"></script>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flush-message">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    {% if not user %}
+        <div class='login-window'>
+            Please enter your username:
+            <form action="" method="POST">
+                <input type="text" name="username" id="">
+                <button type="submit">Enter app</button>
+            </form>
+        </div>
+    {% else %}
+        <div class="chat-window"></div>
+        <input type="text" name="" id="message">
+        <button onclick="sendMessage()">Send</button>
+        <a href="/leave-chat">Leave chat</a>
+        <script>
+            let socket = io();
+            socket.on('connect', () => {
+                console.log('connected')
+            });
+            function sendMessage() {
+                let input = document.getElementById('message')
+                socket.emit('message', input.value)
+                input.value = ''
+            }
+            socket.on('message', (data) => {
+                addMessage({type: 'message', ...data})
+            });
+
+            socket.on('system', (data) => {
+                addMessage({type: 'system', ...data})
+            });
+
+            function addMessage({type, sender, message}) {
+                let chat = document.querySelector('.chat-window');
+                chat.innerHTML += `<div>${sender}: ${message}</div>`
+            }
+        </script>
+    {% endif %}
+</body>
+</html>
