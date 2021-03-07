@@ -2,7 +2,7 @@ import re
 from flask import Flask, render_template, request, flash, session, redirect, make_response
 from socketio import Server, WSGIApp
 
-app = Flask(__name__, template_folder='.')
+app = Flask(__name__, template_folder='.', static_url_path='/', static_folder='.')
 app.config['SECRET_KEY'] = 'testKey'
 sio = Server()
 app.wsgi_app = WSGIApp(sio, app.wsgi_app)
@@ -14,17 +14,18 @@ def connect(sid, environ, auth=None):
     p = re.compile(r'username=(.*);?')
     username = p.search(environ.get('HTTP_COOKIE')).group(1)
     current_users[sid] = username
-    sio.emit('system', {'sender': 'System message', 'message': f'{username} entered chat'})
+    # sio.emit('userlist', list(current_users.values()), room=sid)
+    sio.emit('system', {'type': 'connect', 'data': username})
 
 @sio.on('disconnect')
 def disconnect(sid):
     username = current_users[sid]
     del current_users[sid]
-    sio.emit('system', {'sender': 'System message', 'message': f'{username} left chat'})
+    sio.emit('system', {'type': 'disconnect', 'data': username})
 
 @sio.on('message')
 def message(sid, data):
-    sio.emit('message', {'sender': current_users[sid], 'message': data})
+    sio.emit('message', {'sender': current_users[sid], 'data': data})
 
 @app.route('/', methods=['POST', 'GET'])
 def main():

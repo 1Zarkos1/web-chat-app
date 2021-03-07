@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="./index.css">
+    <title>Chat app</title>
     <script src="https://cdn.socket.io/3.1.1/socket.io.min.js" integrity="sha384-gDaozqUvc4HTgo8iZjwth73C6dDDeOJsAgpxBcMpZYztUfjHXpzrpdrHRdVp8ySO" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -16,39 +17,67 @@
         {% endif %}
     {% endwith %}
     {% if not user %}
-        <div class='login-window'>
-            Please enter your username:
-            <form action="" method="POST">
-                <input type="text" name="username" id="">
-                <button type="submit">Enter app</button>
-            </form>
-        </div>
+        <section>
+            <div class='window-wrapper'>
+                <div class="form-title">Enter your username:</div>
+                <form action="" method="POST">
+                    <input type="text" name="username" id="">
+                    <button type="submit">Enter chat</button>
+                </form>
+            </div>
+        </section>
     {% else %}
-        <div class="chat-window"></div>
-        <input type="text" name="" id="message">
-        <button onclick="sendMessage()">Send</button>
-        <a href="/leave-chat">Leave chat</a>
+        <section class="chat-section">
+            <div class='username'>123123</div>
+            <div class="window-wrapper chat-wrapper">
+                <div class="chat-window"></div>
+                <div class="control">
+                    <input type="text" name="" id="message">
+                    <button onclick="sendMessage()">Send</button>
+                    <button onclick="leaveChat()">Leave</button>
+                </div>
+                <div class="userslist"></div>
+            </div>
+        </section>
         <script>
             let socket = io();
+            let username = document.cookie.match('username=(.+?)($|;)')[1];
+            let userlistNode = document.querySelector('.userslist');
+            let userlist = [];
+            document.querySelector('.username').innerText = `Welcome to chat ${username}!`;
+
             socket.on('connect', () => {
                 console.log('connected')
             });
-            function sendMessage() {
-                let input = document.getElementById('message')
-                socket.emit('message', input.value)
-                input.value = ''
-            }
+
             socket.on('message', (data) => {
                 addMessage({type: 'message', ...data})
             });
 
             socket.on('system', (data) => {
-                addMessage({type: 'system', ...data})
+                let message = data.type == 'connect' ? 'connected to' : 'disconnected from'
+                addMessage({data: `${data.data} ${message} chat`})
             });
 
-            function addMessage({type, sender, message}) {
+            function sendMessage() {
+                let input = document.getElementById('message');
+                socket.emit('message', input.value);
+                input.value = '';
+            }
+
+            function leaveChat() {
+                socket.disconnect();
+                window.location.href = '/leave-chat';
+            }
+
+            function addMessage({sender, data}) {
                 let chat = document.querySelector('.chat-window');
-                chat.innerHTML += `<div>${sender}: ${message}</div>`
+                let messageClass = !sender ? 'system' : sender == username ? "chat-message self" : "chat-message";
+                let messageDiv = document.createElement('div');
+                messageDiv.setAttribute('class', messageClass);
+                messageDiv.innerText = sender ? `${sender}: ${data}` : `${data}`;
+                chat.appendChild(messageDiv);
+                chat.scrollTop = chat.scrollHeight;
             }
         </script>
     {% endif %}
