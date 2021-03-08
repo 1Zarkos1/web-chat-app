@@ -41,8 +41,8 @@ def main():
             resp.set_cookie('username', username)
     return resp
 
-@app.route('/leave-chat')
-def leave():
+@app.route('/logout')
+def logout():
     resp = make_response(redirect('/'))
     resp.delete_cookie('username')
     return resp

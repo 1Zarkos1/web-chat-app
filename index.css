@@ -78,7 +78,7 @@ button {
   text-align: right;
 }
 
-.chat-message:first-child {
+.chat-window div:first-child {
   margin-top: auto !important;
 }
 
