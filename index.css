@@ -1,8 +1,7 @@
 section {
   display: flex;
   justify-content: center;
-  height: 100vh;
-  width: 90%;
+  min-height: 100vh;
   padding: 0 1rem;
   align-items: center;
   margin: 0 5%;
@@ -52,15 +51,21 @@ button {
 
 .chat-section {
   flex-direction: column;
+  justify-content: flex-start;
+}
+
+.chat-header {
+  margin: 0.5rem 0;
 }
 
 .username {
-  margin: 0.5rem 0;
+  margin-top: 0.5rem;
+  font-size: 1rem;
 }
 
 .chat-window {
   background-color: white;
-  height: 80vh;
+  min-height: 80vh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -107,4 +112,16 @@ button {
 
 #message {
   flex-grow: 1;
+}
+
+.userlist-wrapper {
+  margin: 1rem 0;
+  font-size: 1.1rem;
+  border: #9a9797 1px solid;
+  padding: 0.5rem;
+}
+
+.userlist-wrapper span {
+  border-bottom: #9a9797 1px solid;
+  display: block;
 }

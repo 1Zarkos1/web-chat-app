@@ -12,9 +12,9 @@ current_users = {}
 @sio.on('connect')
 def connect(sid, environ, auth=None):
     p = re.compile(r'username=(.*);?')
-    username = p.search(environ.get('HTTP_COOKIE')).group(1)
+    username = p.search(environ.get('HTTP_COOKIE')).group(1).strip('"')
     current_users[sid] = username
-    # sio.emit('userlist', list(current_users.values()), room=sid)
+    sio.emit('userlist', list(current_users.values()), room=sid)
     sio.emit('system', {'type': 'connect', 'data': username})
 
 @sio.on('disconnect')

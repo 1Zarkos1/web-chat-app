@@ -30,7 +30,7 @@
         </section>
     {% else %}
         <section class="chat-section">
-            <div class='username'>123123</div>
+            <div class='chat-header'></div>
             <div class="window-wrapper chat-wrapper">
                 <div class="chat-window"></div>
                 <div class="control">
@@ -38,7 +38,10 @@
                     <button onclick="sendMessage()">Send</button>
                     <button onclick="logout()">Logout</button>
                 </div>
-                <div class="userslist"></div>
+                <div class="userlist-wrapper">
+                    <span>Users online:</span>
+                    <div class="userlist"></div>
+                </div>
             </div>
         </section>
         <script src="index.js"></script>
